@@ -14,7 +14,7 @@ class AuthController extends BaseController
     function __construct()
     {
         helper('form');
-        $this->user= new UserModel();
+        $this->user = new UserModel();
     }
 
     public function login()
@@ -28,10 +28,10 @@ class AuthController extends BaseController
             if ($this->validate($rules)) {
                 $username = $this->request->getVar('username');
                 $password = $this->request->getVar('password');
+    
+                $dataUser = $this->user->where('username', $username)->first(); //pw 1234567 //123
 
-                $dataUser = $this->user->where(['username' => $username])->first(); //pasw 1234567
-
-                if ($dataUser) {
+                if($dataUser) {
                     if (password_verify($password, $dataUser['password'])) {
                         session()->set([
                             'username' => $dataUser['username'],
@@ -40,8 +40,8 @@ class AuthController extends BaseController
                         ]);
 
                         return redirect()->to(base_url('/'));
-                    } else {
-                        session()->setFlashdata('failed', 'Kombinasi Username & Password Salah');
+                    } else { 
+                        session()->setFlashdara('failed', 'Kombinasi Username dan Password Salah');
                         return redirect()->back();
                     }
                 } else {
@@ -50,13 +50,13 @@ class AuthController extends BaseController
                 }
             } else {
                 session()->setFlashdata('failed', $this->validator->listErrors());
-                return redirect()->back();
+                    return redirect()->back();
             }
         }
 
         return view('v_login');
     }
-
+    
     public function logout()
     {
         session()->destroy();
