@@ -11,6 +11,7 @@ History Transaksi Pembelian <strong><?= $username ?></strong>
                 <th scope="col">ID Pembelian</th>
                 <th scope="col">Waktu Pembelian</th>
                 <th scope="col">Total Bayar</th>
+                <th scope="col">Ongkir</th>
                 <th scope="col">Alamat</th>
                 <th scope="col">Status</th>
                 <th scope="col"></th>
@@ -26,6 +27,7 @@ History Transaksi Pembelian <strong><?= $username ?></strong>
                         <td><?php echo $item['id'] ?></td>
                         <td><?php echo $item['created_at'] ?></td>
                         <td><?php echo number_to_currency($item['total_harga'], 'IDR') ?></td>
+                        <td><?php echo number_to_currency($item['ongkir'], 'IDR') ?></td>
                         <td><?php echo $item['alamat'] ?></td>
                         <td><?php echo ($item['status'] == "1") ? "Sudah Selesai" : "Belum Selesai" ?></td>
                         <td>
@@ -45,21 +47,28 @@ History Transaksi Pembelian <strong><?= $username ?></strong>
                                 <div class="modal-body">
                                     <?php 
                                     if(!empty($product)){
-	                                    foreach ($product[$item['id']] as $index2 => $item2) : ?>
+                                        foreach ($product[$item['id']] as $index2 => $item2) : ?>
+                                            <?php
+                                            if (session()->get('diskon')) {
+                                                $diskon = session()->get('diskon');
+                                                $item2['subtotal_harga'] = $item2['harga'] - $diskon['nominal'];
+                                            }
+                                            ?>
 	                                        <?php echo $index2 + 1 . ")" ?>
 	                                        <?php if ($item2['foto'] != '' and file_exists("img/" . $item2['foto'] . "")) : ?>
 	                                            <img src="<?php echo base_url() . "img/" . $item2['foto'] ?>" width="100px">
-	                                        <?php endif; ?>
-	                                        <strong><?= $item2['nama'] ?></strong>
-	                                        <?= number_to_currency($item2['harga'], 'IDR') ?>
-	                                        <br>
-	                                        <?= "(" . $item2['jumlah'] . " pcs)" ?><br>
-	                                        <?= number_to_currency($item2['subtotal_harga'], 'IDR') ?>
+                                                <?php endif; ?>
+                                                <strong><?= $item2['nama'] ?></strong>
+                                                <?= number_to_currency($item2['harga'], 'IDR') ?>
+                                                <?= number_to_currency($item2['subtotal_harga'], 'IDR') ?>
+                                                <br>
+	                                        <?= "(" . $item2['jumlah'] . " pcs)" ?><br> 
 	                                        <hr>
 	                                    <?php 
 	                                    endforeach; 
                                     }
                                     ?>
+                                    
                                     Ongkir <?= number_to_currency($item['ongkir'], 'IDR') ?>
                                 </div>
                             </div>

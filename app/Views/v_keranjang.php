@@ -28,13 +28,18 @@ if (session()->getFlashData('success')) {
         $i = 1;
         if (!empty($items)) :
             foreach ($items as $index => $item) :
+                // Check if there is a discount applied
+                $discountedPrice = $item['price']; // Default price
+                // if (session()->get('diskon')) {
+                //     $discountedPrice = $item['price'] - session()->get('diskon')['nominal']; // Apply discount
+                // }
         ?>
                 <tr>
                     <td><?php echo $item['name'] ?></td>
                     <td><img src="<?php echo base_url() . "img/" . $item['options']['foto'] ?>" width="100px"></td>
-                    <td><?php echo number_to_currency($item['price'], 'IDR') ?></td>
+                    <td><?php echo number_to_currency($discountedPrice, 'IDR') ?></td>
                     <td><input type="number" min="1" name="qty<?php echo $i++ ?>" class="form-control" value="<?php echo $item['qty'] ?>"></td>
-                    <td><?php echo number_to_currency($item['subtotal'], 'IDR') ?></td>
+                    <td><?php echo number_to_currency($item['qty'] * $discountedPrice, 'IDR') ?></td> <!-- Subtotal with discount -->
                     <td>
                         <a href="<?php echo base_url('keranjang/delete/' . $item['rowid'] . '') ?>" class="btn btn-danger"><i class="bi bi-trash"></i></a>
                     </td>

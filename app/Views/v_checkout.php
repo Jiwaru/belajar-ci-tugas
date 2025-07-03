@@ -43,14 +43,24 @@
                 <tbody>
                     <?php
                     $i = 1;
+                    $diskon = session()->get('diskon');  // Retrieve discount from session
+                    $totalDiskon = 0;
                     if (!empty($items)) :
                         foreach ($items as $index => $item) :
+                            // If discount is available, apply it
+                            $discountedPrice = $item['price'];
+                            if ($diskon) {
+                                $discountedPrice = $item['price'] - $diskon['nominal'];  // Apply the discount
+                            }
+
+                            $subtotal = $discountedPrice * $item['qty'];
+                            $totalDiskon += $subtotal;
                     ?>
                             <tr>
                                 <td><?php echo $item['name'] ?></td>
-                                <td><?php echo number_to_currency($item['price'], 'IDR') ?></td>
+                                <td><?php echo number_to_currency($discountedPrice, 'IDR') ?></td>
                                 <td><?php echo $item['qty'] ?></td>
-                                <td><?php echo number_to_currency($item['price'] * $item['qty'], 'IDR') ?></td>
+                                <td><?php echo number_to_currency($subtotal, 'IDR') ?></td>
                             </tr>
                     <?php
                         endforeach;
@@ -59,12 +69,12 @@
                     <tr>
                         <td colspan="2"></td>
                         <td>Subtotal</td>
-                        <td><?php echo number_to_currency($total, 'IDR') ?></td>
+                        <td><?php echo number_to_currency($totalDiskon, 'IDR') ?></td>
                     </tr>
                     <tr>
                         <td colspan="2"></td>
                         <td>Total</td>
-                        <td><span id="total"><?php echo number_to_currency($total, 'IDR') ?></span></td>
+                        <td><span id="total"><?php echo number_to_currency($totalDiskon, 'IDR') ?></span></td>
                     </tr>
                 </tbody>
             </table>
@@ -143,7 +153,7 @@ $(document).ready(function() {
     });  
     
     function hitungTotal() {
-        total = ongkir + <?= $total ?>;
+        total = ongkir + <?= $totalDiskon ?>;
 
         $("#ongkir").val(ongkir);
         $("#total").html("IDR " + total.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'));
